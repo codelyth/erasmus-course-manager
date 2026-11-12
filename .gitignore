@@ -1,0 +1,21 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# .NET build outputs
+[Bb]in/
+[Oo]bj/
+
+# Python / IDE
+.idea/
+.vscode/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local environment variables
+.env
+.env.*
+!.env.example
