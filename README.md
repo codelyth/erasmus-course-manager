@@ -159,11 +159,11 @@ Python dependencies and setup instructions will be documented when the AI module
 
 The design references include use case, class, component, authentication activity, and face recognition login sequence diagrams. A course registration sequence diagram is also planned for the documentation set.
 
-Diagram files will be added under `docs/uml/` when the documentation structure is prepared.
+Diagram files are added under `docs/uml/` path.
 
 ## 👩‍💻 Author
 
-**Yaprak** · [@codelyth](https://github.com/codelyth)
+**Yaprak Cihantimur** · [@codelyth](https://github.com/codelyth)
 
 Developed as an individual academic project for **Programming 3 & AI Tools** at the **University of Bielsko-Biała**.
 
