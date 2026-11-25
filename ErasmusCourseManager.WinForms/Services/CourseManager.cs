@@ -1,21 +1,28 @@
-﻿using ErasmusCourseManager.WinForms.Models;
+using ErasmusCourseManager.WinForms.Models;
 
 namespace ErasmusCourseManager.WinForms.Services;
 
 public class CourseManager
 {
     private readonly AppDataStore _store;
+    private readonly UserSession _session;
 
-    public CourseManager(AppDataStore store)
+    public CourseManager(AppDataStore store, UserSession session)
     {
         _store = store;
+        _session = session;
     }
 
     public List<Course> SearchCourses(string searchText = "")
     {
-        string query = searchText.Trim();
+        User currentUser = _session.RequireUser();
+
+        string query = (searchText ?? string.Empty).Trim();
 
         return _store.Courses
+            .Where(course =>
+                currentUser is not Academician
+                || course.AcademicianId == currentUser.Id)
             .Where(course =>
                 course.Code.Contains(
                     query, StringComparison.OrdinalIgnoreCase)
@@ -27,6 +34,16 @@ public class CourseManager
 
     public List<Course> GetCoursesByAcademician(int academicianId)
     {
+        User currentUser = _session.RequireUser();
+
+        if (currentUser is not Administrator
+            && !(currentUser is Academician
+                && currentUser.Id == academicianId))
+        {
+            throw new UnauthorizedAccessException(
+                "You can only view your own assigned courses.");
+        }
+
         return _store.Courses
             .Where(course => course.AcademicianId == academicianId)
             .OrderBy(course => course.Code)
@@ -40,6 +57,8 @@ public class CourseManager
         int ects,
         int? academicianId = null)
     {
+        _session.RequireAdministrator();
+
         int nextId = _store.Courses
             .Select(course => course.Id)
             .DefaultIfEmpty(0)
@@ -55,6 +74,10 @@ public class CourseManager
 
     public void UpdateCourse(Course updatedCourse)
     {
+        _session.RequireAdministrator();
+
+        ArgumentNullException.ThrowIfNull(updatedCourse);
+
         GetRequiredCourse(updatedCourse.Id);
 
         ValidateCourse(updatedCourse);
@@ -81,6 +104,8 @@ public class CourseManager
 
     public void AssignAcademician(int courseId, int? academicianId)
     {
+        _session.RequireAdministrator();
+
         Course course = GetRequiredCourse(courseId);
 
         var updatedCourse = new Course(
@@ -96,6 +121,8 @@ public class CourseManager
 
     public void RemoveCourse(int courseId)
     {
+        _session.RequireAdministrator();
+
         GetRequiredCourse(courseId);
 
         bool hasRegistrations = _store.Registrations

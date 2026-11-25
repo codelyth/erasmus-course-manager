@@ -1,4 +1,4 @@
-﻿using System.Net.Mail;
+using System.Net.Mail;
 using ErasmusCourseManager.WinForms.Models;
 
 namespace ErasmusCourseManager.WinForms.Services;
@@ -7,18 +7,23 @@ public class UserManager
 {
     private readonly AppDataStore _store;
     private readonly PasswordHasher _passwordHasher;
+    private readonly UserSession _session;
 
     public UserManager(
         AppDataStore store,
-        PasswordHasher passwordHasher)
+        PasswordHasher passwordHasher,
+        UserSession session)
     {
         _store = store;
         _passwordHasher = passwordHasher;
+        _session = session;
     }
 
     public List<User> SearchUsers(string searchText = "")
     {
-        string query = searchText.Trim();
+        _session.RequireAdministrator();
+
+        string query = (searchText ?? string.Empty).Trim();
 
         return _store.Users
             .Where(user =>
@@ -35,6 +40,8 @@ public class UserManager
 
     public User GetUserById(int userId)
     {
+        _session.RequireAdministrator();
+
         return _store.Users.FirstOrDefault(user => user.Id == userId)
             ?? throw new InvalidOperationException("User not found.");
     }
@@ -83,6 +90,8 @@ public class UserManager
 
     public void UpdateUser(User updatedUser)
     {
+        _session.RequireAdministrator();
+
         ArgumentNullException.ThrowIfNull(updatedUser);
 
         User existing = GetUserById(updatedUser.Id);
@@ -118,6 +127,8 @@ public class UserManager
 
     public void ChangePassword(int userId, string newPassword)
     {
+        _session.RequireAdministrator();
+
         User existing = GetUserById(userId);
 
         string newHash = _passwordHasher.Hash(newPassword);
@@ -163,6 +174,8 @@ public class UserManager
 
     public void RemoveUser(int userId)
     {
+        _session.RequireAdministrator();
+
         User user = GetUserById(userId);
 
         EnsureAnotherActiveAdministrator(user);
@@ -182,6 +195,8 @@ public class UserManager
 
     private void AddUser(Func<int, User> createUser)
     {
+        _session.RequireAdministrator();
+
         int nextId = _store.Users
             .Select(user => user.Id)
             .DefaultIfEmpty(0)

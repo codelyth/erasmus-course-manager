@@ -1,4 +1,4 @@
-﻿using ErasmusCourseManager.WinForms.Models;
+using ErasmusCourseManager.WinForms.Models;
 using ErasmusCourseManager.WinForms.Repositories;
 
 namespace ErasmusCourseManager.WinForms.Services;

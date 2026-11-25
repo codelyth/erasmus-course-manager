@@ -1,21 +1,25 @@
-﻿using ErasmusCourseManager.WinForms.Models;
+using ErasmusCourseManager.WinForms.Models;
 
 namespace ErasmusCourseManager.WinForms.Services;
 
 public class RegistrationManager
 {
     private readonly AppDataStore _store;
+    private readonly UserSession _session;
 
     public event EventHandler<RegistrationEventArgs>? RegistrationCreated;
     public event EventHandler<RegistrationEventArgs>? RegistrationCancelled;
 
-    public RegistrationManager(AppDataStore store)
+    public RegistrationManager(AppDataStore store, UserSession session)
     {
         _store = store;
+        _session = session;
     }
 
     public List<Registration> GetStudentRegistrations(int studentId)
     {
+        _session.RequireStudentOrAdministrator(studentId);
+
         return _store.Registrations
             .Where(registration => registration.StudentId == studentId)
             .OrderByDescending(registration => registration.RegisteredAt)
@@ -24,6 +28,8 @@ public class RegistrationManager
 
     public List<Registration> GetCourseRegistrations(int courseId)
     {
+        _session.RequireCourseAccess(courseId);
+
         return _store.Registrations
             .Where(registration => registration.CourseId == courseId)
             .OrderBy(registration => registration.RegisteredAt)
@@ -32,6 +38,13 @@ public class RegistrationManager
 
     public int GetAvailableCapacity(int courseId)
     {
+        User currentUser = _session.RequireUser();
+
+        if (currentUser is Academician)
+        {
+            _session.RequireCourseAccess(courseId);
+        }
+
         Course course = GetRequiredCourse(courseId);
 
         int enrollmentCount = _store.Registrations.Count(
@@ -42,6 +55,8 @@ public class RegistrationManager
 
     public void RegisterStudent(int studentId, int courseId)
     {
+        _session.RequireStudentOrAdministrator(studentId);
+
         bool activeStudentExists = _store.Users
             .OfType<Student>()
             .Any(student => student.Id == studentId && student.IsActive);
@@ -91,6 +106,8 @@ public class RegistrationManager
 
     public void CancelRegistration(int studentId, int courseId)
     {
+        _session.RequireStudentOrAdministrator(studentId);
+
         Registration registration = _store.Registrations
             .FirstOrDefault(existing =>
                 existing.StudentId == studentId
