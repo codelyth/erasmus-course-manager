@@ -19,6 +19,27 @@ public class UserManager
         _session = session;
     }
 
+    public bool NeedsInitialSetup =>
+        !_store.Users.OfType<Administrator>().Any();
+
+    public void CreateInitialAdministrator(
+        string fullName,
+        string email,
+        string password)
+    {
+        if (!NeedsInitialSetup)
+        {
+            throw new InvalidOperationException(
+                "Initial setup has already been completed.");
+        }
+
+        PersistNewUser(id => new Administrator(
+            id,
+            fullName,
+            email,
+            _passwordHasher.Hash(password)));
+    }
+
     public List<User> SearchUsers(string searchText = "")
     {
         _session.RequireAdministrator();
@@ -197,6 +218,11 @@ public class UserManager
     {
         _session.RequireAdministrator();
 
+        PersistNewUser(createUser);
+    }
+
+    private void PersistNewUser(Func<int, User> createUser)
+    {
         int nextId = _store.Users
             .Select(user => user.Id)
             .DefaultIfEmpty(0)
