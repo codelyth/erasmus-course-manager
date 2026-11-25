@@ -16,8 +16,6 @@ A Windows desktop application for Erasmus students, academicians, and administra
 ![Status](https://img.shields.io/badge/Status-Early_Development-155EEF?style=flat-square)
 ![Academic Project](https://img.shields.io/badge/University_of_Bielsko--Biała-Programming_3_%26_AI_Tools-163B65?style=flat-square)
 
-**🎓 Learn · 🛠️ Build · 🔐 Authenticate**
-
 </div>
 
 ---
