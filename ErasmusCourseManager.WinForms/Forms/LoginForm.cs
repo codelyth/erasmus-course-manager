@@ -15,7 +15,7 @@ public class LoginForm : Form
     {
         _services = services;
         AppTheme.Apply(this);
-        Text = "Erasmus Course Manager - Sign in";
+        Text = "Erasmus Course Manager - Sign In";
         ClientSize = new Size(900, 540);
         MinimumSize = new Size(840, 560);
 
@@ -72,7 +72,7 @@ public class LoginForm : Form
 
         fields.Controls.Add(new Label
         {
-            Text = "Welcome back",
+            Text = "Welcome Back",
             Dock = DockStyle.Fill,
             Font = new Font(Font.FontFamily, 20F, FontStyle.Bold)
         }, 0, 0);
@@ -83,20 +83,20 @@ public class LoginForm : Form
             Dock = DockStyle.Fill
         }, 0, 1);
 
-        AddField(fields, "Email address", _email, 2);
+        AddField(fields, "Email Address", _email, 2);
         AddField(fields, "Password", _password, 4);
         _password.UseSystemPasswordChar = true;
 
         var showPassword = new CheckBox
         {
-            Text = "Show password",
+            Text = "Show Password",
             Dock = DockStyle.Fill
         };
         showPassword.CheckedChanged += (_, _) =>
             _password.UseSystemPasswordChar = !showPassword.Checked;
         fields.Controls.Add(showPassword, 0, 6);
 
-        _loginButton.Text = "Sign in";
+        _loginButton.Text = "Sign In";
         _loginButton.Dock = DockStyle.Fill;
         AppTheme.ApplyPrimaryButton(_loginButton);
         _loginButton.Click += SignIn;

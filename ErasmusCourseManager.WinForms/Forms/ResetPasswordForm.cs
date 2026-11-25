@@ -16,20 +16,20 @@ public class ResetPasswordForm : Form
         _userId = userId;
         var user = users.GetUserById(userId);
         AppTheme.Apply(this);
-        Text = $"Reset password - {user.FullName}";
+        Text = $"Reset Password - {user.FullName}";
         ClientSize = new Size(530, 300);
         MinimumSize = new Size(500, 330);
 
         var fields = FormLayout.CreateFields();
-        FormLayout.AddField(fields, "New password", _password);
-        FormLayout.AddField(fields, "Confirm new password", _confirm);
+        FormLayout.AddField(fields, "New Password", _password);
+        FormLayout.AddField(fields, "Confirm New Password", _confirm);
         var actions = new FlowLayoutPanel
         {
             Dock = DockStyle.Bottom,
             Height = 72,
             Padding = new Padding(24, 12, 24, 12)
         };
-        var save = FormLayout.CreateButton("Reset password", SavePassword);
+        var save = FormLayout.CreateButton("Reset Password", SavePassword);
         var cancel = FormLayout.CreateButton("Cancel", (_, _) => Close());
         cancel.DialogResult = DialogResult.Cancel;
         actions.Controls.Add(save);

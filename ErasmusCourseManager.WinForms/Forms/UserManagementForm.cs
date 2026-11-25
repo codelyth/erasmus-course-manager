@@ -160,7 +160,16 @@ public class UserManagementForm : Form
     {
         using var dialog = new ResetPasswordForm(_services.Users, SelectedUserId());
         if (dialog.ShowDialog(this) == DialogResult.OK)
+        {
             _status.Text = "Password reset successfully.";
+
+            MessageBox.Show(
+                this,
+                "The password has been reset successfully.",
+                "Password Reset Successful",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
     }
 
     private void RunAction(Action action)
