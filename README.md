@@ -164,11 +164,3 @@ Diagram files are added under `docs/uml/` path.
 **Yaprak Cihantimur** · [@codelyth](https://github.com/codelyth)
 
 Developed as an individual academic project for **Programming 3 & AI Tools** at the **University of Bielsko-Biała**.
-
----
-
-<div align="center">
-
-💙 Built step by step, with a focus on understanding the code.
-
-</div>
