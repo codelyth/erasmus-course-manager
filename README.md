@@ -13,7 +13,7 @@ A Windows desktop application for Erasmus students, academicians, and administra
 ![Python](https://img.shields.io/badge/Python-Planned-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-Planned-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
 
-![Status](https://img.shields.io/badge/Status-Early_Development-155EEF?style=flat-square)
+![Status](https://img.shields.io/badge/Status-In_Development-155EEF?style=flat-square)
 ![Academic Project](https://img.shields.io/badge/University_of_Bielsko--Biała-Programming_3_%26_AI_Tools-163B65?style=flat-square)
 
 </div>
@@ -24,81 +24,137 @@ A Windows desktop application for Erasmus students, academicians, and administra
 
 Erasmus Course Manager is an individual semester project developed for the **Programming 3** and **AI Tools** courses at the **University of Bielsko-Biała**.
 
-The application will help students register for courses, academicians view their assigned courses and students, and administrators manage accounts, courses, and registrations.
+The application is being developed to help students register for courses, academicians view their assigned courses and students, and administrators manage accounts, courses, and registrations. Account management and course browsing are available; enrollment and course management screens are still in progress.
 
-The project combines C# desktop development with a separate Python computer vision service. Development starts with the course management application; AI authentication will follow.
+The project combines C# desktop development with a separate Python computer vision service. The C# application is under active development; AI authentication will follow.
 
-> 🚧 **Current stage:** Project setup and domain modeling. Course management, authentication, persistence, and AI features are planned and are not yet implemented.
+> 🚧 **Current Stage:** Core models, local persistence, password authentication, authorization, initial administrator setup, and user management screens are implemented. Course browsing is available for all roles. Course management, enrollment screens, and the Python AI module are next.
 
 ## ✅ Current Progress
 
-- [x] Create the .NET 10 Windows Forms project.
-- [x] Verify that the initial application runs.
-- [x] Create the Models, Services, Interfaces, Repositories, and Forms folders.
-- [x] Implement the abstract `User` model with basic constructor validation and encapsulated properties.
-- [ ] Implement `Student`, `Academician`, `Administrator`, `Course`, and `Registration`.
-- [ ] Implement business rules, LINQ queries, and C# events.
-- [ ] Add TXT file persistence.
-- [ ] Add password authentication and authorization.
-- [ ] Build role-based application screens.
-- [ ] Develop and integrate the Python face authentication service.
-- [ ] Complete evaluation, documentation, and demo.
+### Completed
 
-## 👥 Planned User Roles
+- [x] Set up the .NET 10 Windows Forms project and Git repository.
+- [x] Implement `User`, `Student`, `Academician`, `Administrator`, `Course`, and `Registration` models.
+- [x] Add constructor validation and encapsulated model properties.
+- [x] Implement user, course, and registration services with LINQ queries.
+- [x] Add registration-created and registration-cancelled C# events.
+- [x] Save and load application data as JSON text in a TXT file.
+- [x] Implement PBKDF2 password hashing, password login, and logout.
+- [x] Add shared session management and role checks in manager methods.
+- [x] Add first-run administrator account creation.
+- [x] Build the login screen and a shared dashboard adapted to the user's role.
+- [x] Show searchable course lists and available capacity.
+- [x] Build administrator user management: create, edit, activate/deactivate, and delete accounts.
+- [x] Add user search, role filtering, and administrator password reset with confirmation.
+- [x] Centralize UI colors, primary button styling, and shared form layout helpers.
 
-| Role | Capabilities |
-| --- | --- |
-| 🛡️ Administrator | Manage user accounts and courses, assign academicians, manage registrations, and view all enrollments and capacities. |
-| 👩‍🏫 Academician | View assigned courses, list enrolled students, search assigned courses, and view capacities. |
-| 🎒 Student | Browse and search courses, enroll when capacity is available, cancel personal registrations, and view enrolled courses. |
+### Remaining
 
-All roles will support **email/password login** and optional **face recognition login**. Users without a face enrollment will be able to use their passwords.
+- [ ] Build course creation, editing, deletion, and academician assignment screens.
+- [ ] Build student enrollment, cancellation, and personal registration screens.
+- [ ] Display enrolled students for an academician's assigned courses.
+- [ ] Build administrator registration management and an all-registrations view.
+- [ ] Complete end-to-end role, capacity, persistence, and UI checks.
+- [ ] Develop, train/fine-tune, evaluate, and integrate the Python AI module.
+- [ ] Align UML diagrams with the final implementation and complete the project report and demo.
+
+## 👥 User Roles
+
+| Role | Available in the UI | Remaining UI Work |
+| --- | --- | --- |
+| 🛡️ Administrator | Password login/logout, user management, password reset, course search, and capacity display. | Course management, academician assignment, and registration management. |
+| 👩‍🏫 Academician | Password login/logout, assigned-course search, and capacity display. | Student lists for assigned courses. |
+| 🎒 Student | Password login/logout, course search, and capacity display. | Enrollment, cancellation, and personal registration views. |
+
+All three roles currently use **email/password login**. Optional **face recognition login** is planned for the AI phase; password login will remain available.
+
+Course and registration operations already exist in the service layer. Their remaining UI screens will call those services rather than duplicate business rules.
 
 ## 🧰 Technology Stack
 
 | Area | Technologies | Status |
 | --- | --- | --- |
-| Desktop application | C#, .NET 10, Windows Forms | Project initialized |
-| Application logic | OOP, LINQ, C# Events | Domain modeling started |
-| Persistence | TXT files | Planned |
+| Desktop application | C#, .NET 10, Windows Forms | Login, dashboard, and user management available |
+| Application logic | OOP, LINQ, C# Events | Core services implemented |
+| Persistence | JSON text in a TXT file, System.Text.Json | Implemented |
+| Authentication | PBKDF2-SHA256, random salts, shared session | Implemented |
 | Computer vision | Python, OpenCV, MediaPipe | Planned |
 | Face recognition | ArcFace-based embeddings | Planned |
 | Model development | PyTorch training / fine-tuning | Planned |
 | Presentation attack detection | Active liveness and passive anti-spoofing | Planned |
-| C#–Python communication | Local FastAPI service | Planned |
+| C#-Python communication | Local FastAPI service | Planned |
 | Model interchange | ONNX, if needed | Optional |
 | Development tools | Visual Studio 2026, PyCharm, Git, GitHub | Selected tools |
 
 ## 🧱 Architecture
 
-The initial C# implementation uses one Windows Forms project with separate folders for responsibilities:
+The C# application uses one Windows Forms project with separate responsibilities:
 
 | Folder | Responsibility |
 | --- | --- |
-| `Models/` | Domain entities and their state. |
-| `Services/` | Business rules, course registration, and authentication workflows. |
-| `Interfaces/` | Contracts for interchangeable components. |
+| `Models/` | Domain entities, the `AppData` container, and registration event arguments. |
+| `Services/` | Business rules, authentication, authorization, shared state, and service initialization. |
+| `Configuration/` | Central application data paths. |
 | `Repositories/` | Loading and saving application data. |
-| `Forms/` | Windows Forms screens and UI interactions. |
+| `Forms/` | Login, initial setup, dashboard, and user management screens. |
+| `Styling/` | Shared `AppTheme` colors/styles and `FormLayout` helpers. |
+| `Interfaces/` | Reserved for component contracts, including future AI integration. |
 
-The planned domain model consists of an abstract `User` class with `Student`, `Academician`, and `Administrator` subclasses, plus `Course` and `Registration` entities.
+The domain model uses an abstract `User` class with `Student`, `Academician`, and `Administrator` subclasses. A `Registration` links one student to one `Course`. Each course may have **zero or one academician**, while an academician may teach multiple courses.
 
-A registration links one student to one course. Each course may have **zero or one academician**, while an academician may teach multiple courses.
+| Component | Responsibility |
+| --- | --- |
+| `AppServices` | Creates one shared set of services for the application. |
+| `AppDataStore` | Holds in-memory data and commits changes only after saving succeeds. |
+| `FileRepository` | Serializes and deserializes data, writing through a temporary file before replacing the saved file. |
+| `UserManager` | Validates and manages accounts, initial administrator setup, and password resets. |
+| `CourseManager` | Manages courses, academician assignments, and course validation. |
+| `RegistrationManager` | Handles enrollment/cancellation, capacity queries, and registration events. |
+| `AuthService` | Verifies credentials, opens a session, and logs out. |
+| `UserSession` | Resolves the current active user and applies role/ownership checks. |
+| `PasswordHasher` | Creates salted PBKDF2-SHA256 hashes and verifies passwords. |
 
-The Python module will run separately and communicate with C# through a local API. C# will validate the returned user identity and account status before granting access.
+Forms call the managers; managers apply business rules and use the shared store. Persistence and UI styling each have a dedicated implementation.
 
-> 📁 The Python module and supporting data, model, test, and documentation directories will be added in later stages. Empty folders may not appear in Git.
+### Local Data Storage
 
-## 📋 Planned Business Rules
+Users, courses, and registrations are saved together in:
 
-- A student cannot register for the same course twice.
-- A full course cannot accept additional registrations.
-- Course capacity cannot be reduced below the current enrollment count.
-- Related registrations must be checked before deleting a student or course.
-- Users may perform only the operations allowed for their role.
-- Passwords must be stored as hashes, never as plaintext.
-- An operation must not report success if its required file save fails.
-- Face authentication must resolve to an existing, active user account.
+```text
+%LocalAppData%\ErasmusCourseManager\Data\application-data.txt
+```
+
+The file contains readable JSON text. Saving one data snapshot keeps the related lists together. Data is stored outside the repository and build output folders, so rebuilding the project does not remove saved accounts.
+
+Each Windows user has separate local data. The current version does not synchronize records across computers or provide concurrent multi-user access through a server.
+
+### Future AI Integration
+
+The Python module will run separately and communicate with C# through a local FastAPI service. C# will validate the returned user identity and account status before granting access. AI interfaces, the Python client, and model assets have not been implemented yet.
+
+## 📋 Business Rules
+
+The current service layer enforces:
+
+- Unique email addresses across accounts and unique student numbers.
+- No duplicate registration for the same student and course.
+- No additional enrollment when a course is full.
+- No reduction of course capacity below its current enrollment count.
+- Cancellation of related registrations before deleting a student or course.
+- Assignment only to an existing, active academician.
+- Removal of course assignments before deleting or deactivating an academician.
+- Protection of the last active administrator from deletion or deactivation.
+- Administrator-only account and course management.
+- Student access only to their own registrations.
+- Academician access only to their assigned courses and those courses' registration lists.
+- Password hashing rather than plaintext password storage.
+- In-memory changes committed only after the required save succeeds.
+- Registration events raised after persistence succeeds.
+
+Initial administrator creation is permitted only when no administrator account exists. Creating additional administrators requires an authenticated administrator. Existing user roles cannot be changed through the user editor.
+
+Face identity and liveness checks will be implemented in the AI phase.
 
 ## 🔐 Planned Face Authentication
 
@@ -133,33 +189,62 @@ cd erasmus-course-manager
 
 Open `ErasmusCourseManager.slnx` in Visual Studio, set `ErasmusCourseManager.WinForms` as the startup project if necessary, and press **F5**.
 
-**Current expected behavior:** A blank `Form1` window opens. The `User` model exists but is not connected to the UI yet.
+### First Run
+
+If the local data has no administrator account, an **Initial Setup** screen opens. Enter a full name, an unused email address, and a password of at least eight characters, then confirm the password. The account is saved before setup completes.
+
+The application then opens **Sign In**. Subsequent launches skip setup while an administrator account exists. No default administrator password is bundled with the application.
+
+### Current Workflow
+
+1. Sign in with an active account.
+2. View and search the course catalogue. Academicians see only their assigned courses.
+3. As an administrator, open **Manage Users** to create accounts, edit details and status, delete eligible accounts, or reset passwords.
+4. Use **Sign Out** to return to the login screen. Closing the dashboard exits the application.
+
+Email addresses currently act as login identifiers; the app does not send verification or password recovery emails. Account creation is managed by administrators after initial setup.
+
+User management changes and password resets persist across application restarts. Student enrollment and course editing screens are still under development.
 
 Python dependencies and setup instructions will be documented when the AI module is introduced.
 
 ## 🗺️ Development Roadmap
 
-| Phase | Focus |
-| --- | --- |
-| 01 | 🔧 Project setup and domain models — **in progress** |
-| 02 | 🧠 Business logic and OOP |
-| 03 | 📂 LINQ, events, and file persistence |
-| 04 | 🔑 Password authentication and authorization |
-| 05 | 🖥️ Windows Forms UI |
-| 06 | 🐍 Python and computer vision fundamentals |
-| 07 | 📷 OpenCV and MediaPipe |
-| 08 | 🧬 ArcFace and PyTorch model training / fine-tuning |
-| 09 | 🛡️ Liveness detection and anti-spoofing |
-| 10 | 🔗 Python–C# integration |
-| 11 | 🧪 Testing, documentation, and demo |
+| Phase | Focus | Status |
+| --- | --- | --- |
+| 01 | 🔧 Project Setup and Domain Models | Completed |
+| 02 | 🧠 Business Logic and OOP | Core services implemented |
+| 03 | 📂 LINQ, Events, and File Persistence | Implemented |
+| 04 | 🔑 Password Authentication and Authorization | Implemented |
+| 05 | 🖥️ Windows Forms UI | In progress: course and registration screens next |
+| 06 | 🐍 Python and Computer Vision Fundamentals | Planned |
+| 07 | 📷 OpenCV and MediaPipe | Planned |
+| 08 | 🧬 ArcFace and PyTorch Model Training / Fine-Tuning | Planned |
+| 09 | 🛡️ Liveness Detection and Anti-Spoofing | Planned |
+| 10 | 🔗 Python-C# Integration | Planned |
+| 11 | 🧪 Testing, Documentation, and Demo | Manual checks ongoing; final evaluation pending |
+
+## 🧪 Validation So Far
+
+Manual development checks have covered:
+
+- Model creation and inheritance.
+- TXT save/load and persistence across application restarts.
+- Password hashing, incorrect-password rejection, and login/logout.
+- Session checks and selected unauthorized-access scenarios.
+- Registration creation/cancellation events, duplicate enrollment rejection, and restored capacity after cancellation.
+- Initial administrator setup and skipping setup on later launches.
+- Login, course search, and administrator user management workflows.
+
+Full role-by-role acceptance testing, full-capacity enrollment scenarios, save-failure checks, and AI evaluation remain to be completed. The current checks are manual and are not an automated test suite.
 
 ## 📐 UML Design
 
 The design references include use case, class, component, authentication activity, and face recognition login sequence diagrams. A course registration sequence diagram is also planned for the documentation set.
 
-Diagram files are added under `docs/uml/` path.
+Diagram files are stored under `docs/uml/`. The implementation has added shared state, session, hashing, and styling components and uses one data snapshot file. The diagrams will be aligned with these changes before final submission.
 
-## 👩‍💻 Author
+## 👩‍💻 Developer
 
 **Yaprak Cihantimur** · [@codelyth](https://github.com/codelyth)
 
