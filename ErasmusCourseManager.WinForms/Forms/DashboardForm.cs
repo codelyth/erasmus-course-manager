@@ -45,22 +45,24 @@ public class DashboardForm : Form
         var header = new TableLayoutPanel
         {
             Dock = DockStyle.Fill,
-            ColumnCount = 2,
+            ColumnCount = 3,
             RowCount = 1
         };
         header.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        header.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, user is Administrator ? 170 : 0));
         header.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
         header.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-        header.Controls.Add(new Label
+        var welcome = new Label
         {
             Text = $"Welcome, {user.FullName}\n{role} · {user.Email}",
             Dock = DockStyle.Fill,
             TextAlign = ContentAlignment.MiddleLeft
-        }, 0, 0);
+        };
+        header.Controls.Add(welcome, 0, 0);
 
         var logout = new Button
         {
-            Text = "Sign out",
+            Text = "Sign Out",
             Dock = DockStyle.Top,
             Margin = new Padding(0, 12, 0, 0)
         };
@@ -71,12 +73,40 @@ public class DashboardForm : Form
             DialogResult = DialogResult.Retry;
             Close();
         };
-        header.Controls.Add(logout, 1, 0);
+        if (user is Administrator)
+        {
+            var manageUsers = FormLayout.CreateButton("Manage Users", (_, _) =>
+            {
+                try
+                {
+                    using var usersForm = new UserManagementForm(_services);
+                    usersForm.ShowDialog(this);
+                    if (!_services.Session.IsLoggedIn)
+                    {
+                        DialogResult = DialogResult.Retry;
+                        Close();
+                        return;
+                    }
+                    User current = _services.Session.RequireUser();
+                    welcome.Text = $"Welcome, {current.FullName}\nAdministrator · {current.Email}";
+                    RefreshCourses();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(this, ex.Message, "User Management",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            });
+            manageUsers.Dock = DockStyle.Top;
+            manageUsers.Margin = new Padding(0, 12, 10, 0);
+            header.Controls.Add(manageUsers, 1, 0);
+        }
+        header.Controls.Add(logout, 2, 0);
         root.Controls.Add(header, 0, 0);
 
         root.Controls.Add(new Label
         {
-            Text = user is Academician ? "My assigned courses" : "Course catalogue",
+            Text = user is Academician ? "My Assigned Courses" : "Course Catalogue",
             Font = new Font(Font.FontFamily, 16F, FontStyle.Bold),
             Dock = DockStyle.Fill,
             TextAlign = ContentAlignment.MiddleLeft
@@ -87,24 +117,13 @@ public class DashboardForm : Form
         _search.TextChanged += (_, _) => RefreshCourses();
         root.Controls.Add(_search, 0, 2);
 
-        _courses.Dock = DockStyle.Fill;
-        _courses.ReadOnly = true;
-        _courses.AllowUserToAddRows = false;
-        _courses.AllowUserToDeleteRows = false;
-        _courses.AllowUserToResizeRows = false;
-        _courses.MultiSelect = false;
-        _courses.RowHeadersVisible = false;
-        _courses.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-        _courses.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-        _courses.BackgroundColor = AppTheme.Surface;
-        _courses.BorderStyle = BorderStyle.None;
-        _courses.AutoGenerateColumns = false;
+        FormLayout.ConfigureGrid(_courses);
 
         AddColumn("Code", "Code", 65);
         AddColumn("Name", "Course", 180);
         AddColumn("Ects", "ECTS", 45);
         AddColumn("Capacity", "Capacity", 60);
-        AddColumn("Available", "Available places", 80);
+        AddColumn("Available", "Available Places", 80);
         root.Controls.Add(_courses, 0, 3);
 
         _status.Dock = DockStyle.Fill;
@@ -145,7 +164,7 @@ public class DashboardForm : Form
             _courses.DataSource = rows;
             _status.Text = rows.Count == 0
                 ? "No courses found."
-                : $"{rows.Count} course(s)";
+                : $"{rows.Count} Course(s)";
         }
         catch (Exception ex)
         {
