@@ -19,7 +19,7 @@ public class InitialSetupForm : Form
         _users = users;
 
         AppTheme.Apply(this);
-        Text = "Erasmus Course Manager — Initial Setup";
+        Text = "Erasmus Course Manager - Initial Setup";
         ClientSize = new Size(560, 620);
         MinimumSize = new Size(540, 640);
         MaximizeBox = false;

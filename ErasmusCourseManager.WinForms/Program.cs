@@ -23,8 +23,7 @@ internal static class Program
                     return;
             }
 
-            // The login screen will replace Form1 in the next step.
-            Application.Run(new Form1());
+            Application.Run(new LoginForm(services));
         }
         catch (Exception ex)
         {
